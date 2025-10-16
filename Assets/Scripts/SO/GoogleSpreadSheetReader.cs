@@ -1,21 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using GoogleSheetsToUnity;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace ProjectRoulette
 {
 	[CreateAssetMenu(fileName = "GoogleSpreadSheetReader", menuName = "Scriptable Objects/GoogleSpreadSheetReader")]
 	public class GoogleSpreadSheetReader : ScriptableObject
 	{
-		[HideInInspector] public readonly string SheetID = "1vozS06evrJUWsLwDRHl-uuSZ1QLOV-By0qt_2cMBO4k";
-
-		[HideInInspector] public readonly string[] WorkSheetList =
-		{
-			"Item"
-		};
+		/// <summary>
+		/// 정보를 갱신할 SO 모음
+		/// </summary>
 
 		#region Data
 
@@ -23,21 +21,34 @@ namespace ProjectRoulette
 
 		#endregion
 
-		public Type UpdateDataType = null;
+		[HideInInspector] public Type UpdateDataType = null;
 
+		// TODO: GobalOption으로 수정
+		public static string TITLE_KEY = "Key";
+		public static string IGNORE_PREFIX = "#";
+
+		/// <summary>
+		/// 데이터 갱신
+		/// </summary>
+		/// <param name="ss"></param>
 		public void UpdateData(GstuSpreadSheet ss)
 		{
 			switch (UpdateDataType)
 			{
 				case not null when UpdateDataType == typeof(ItemSO):
-					UpdateDataInList(ss, items);
+					UpdateData(ss, items);
 					break;
 				default:
+					Debug.LogError("No such type");
 					break;
 			}
 		}
 
-		public void SetSOAssetsInList(string type)
+		/// <summary>
+		/// SO 목록 갱신
+		/// </summary>
+		/// <param name="type"></param>
+		public void RefreshSOAssets(string type)
 		{
 			switch (type)
 			{
@@ -45,18 +56,35 @@ namespace ProjectRoulette
 					items = GetSOAssets<ItemSO>();
 					break;
 				default:
+					Debug.LogError("No such type");
 					break;
 			}
 		}
 
+		/// <summary>
+		/// 해당 타입의 SO를 모두 가져오는 함수
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
 		private List<T> GetSOAssets<T>() where T : SOBase
 		{
 			var guids = AssetDatabase.FindAssets("t:" + typeof(T).Name);
-			var soList = new List<T>();
+			if (guids.Length == 0)
+			{
+				Debug.LogError("Assets not found - name : " + typeof(T).Name);
+				return null;
+			}
 
+			var soList = new List<T>();
 			foreach (var guid in guids)
 			{
 				var path = AssetDatabase.GUIDToAssetPath(guid);
+				if (path.Length == 0)
+				{
+					Debug.LogError("Assets not found - guid : " + guid);
+					continue;
+				}
+
 				var so = AssetDatabase.LoadAssetAtPath<T>(path);
 				if (so)
 				{
@@ -67,22 +95,54 @@ namespace ProjectRoulette
 			return soList;
 		}
 
-		private void UpdateDataInList<T>(GstuSpreadSheet ss, List<T> soList) where T : SOBase
+		/// <summary>
+		/// 데이터 갱신
+		/// </summary>
+		/// <param name="ss"></param>
+		/// <param name="soList"> 갱신할  데이터 리스트 </param>
+		/// <typeparam name="T"></typeparam>
+		private void UpdateData<T>(GstuSpreadSheet ss, List<T> soList) where T : SOBase
 		{
-			foreach (var row in ss.rows.secondaryKeyLink)
-			{
-				SetSOAssetsInList(typeof(T).Name);
+			// Script 갱신
+			var typeName = typeof(T).Name;
+			RewriteTargetScript(typeName, ss);
+			RefreshSOAssets(typeName);
 
-				T targetSO = null;
-				if (!HasSOInList(row.Key, out targetSO))
+			var ssRow = ss.rows.secondaryKeyLink;
+			var ssCol = ss.columns.secondaryKeyLink;
+			if (ssRow == null || ssCol == null)
+			{
+				Debug.LogError("Cannot find data");
+				return;
+			}
+
+			foreach (var row in ssRow)
+			{
+				if (!HasSOInList(row.Key, out var targetSO))
 				{
-					Debug.LogWarning("해당 Key에 대응하는 SO가 없습니다 : " + row.Key);
+					if (row.Key != TITLE_KEY)
+					{
+						Debug.LogWarning("해당 Key에 대응하는 SO가 없습니다 : " + row.Key);
+					}
+
 					continue;
 				}
 
 				var data = new List<string>();
-				foreach (var col in ss.columns.secondaryKeyLink)
+				foreach (var col in ssCol)
 				{
+					// #으로 시작하면 무시
+					if (col.Key.StartsWith(IGNORE_PREFIX))
+					{
+						continue;
+					}
+
+					// Key 제외
+					if (col.Key.Equals(TITLE_KEY, StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
+
 					data.Add(ss[row.Key, col.Key].value);
 				}
 
@@ -104,12 +164,66 @@ namespace ProjectRoulette
 				return false;
 			}
 		}
+
+		/// <summary>
+		/// Sheet에 맞게 Script 갱신
+		/// </summary>
+		/// <param name="className"></param>
+		/// <param name="ss"></param>
+		private void RewriteTargetScript(string className, GstuSpreadSheet ss)
+		{
+			var data = new List<string>();
+			var ssCol = ss.columns.secondaryKeyLink;
+			if (ssCol == null)
+			{
+				Debug.LogError("Cannot find ss.columns.secondaryKeyLink");
+				return;
+			}
+
+			foreach (var col in ssCol)
+			{
+				data.Add(ss[TITLE_KEY, col.Key].value);
+			}
+
+			var scriptPath = GetScriptPathByClassName(className);
+			File.WriteAllText(scriptPath, SOBase.GetNewScript(className, data));
+			AssetDatabase.Refresh();
+
+			return;
+
+			string GetScriptPathByClassName(string className)
+			{
+				var scripts = Resources.FindObjectsOfTypeAll<MonoScript>();
+				if (scripts == null)
+				{
+					Debug.LogError("Scripts not found");
+					return null;
+				}
+
+				foreach (var script in scripts)
+				{
+					if (script && script.name == className)
+					{
+						return AssetDatabase.GetAssetPath(script);
+					}
+				}
+
+				return null; // 못 찾은 경우
+			}
+		}
 	}
 
 #if UNITY_EDITOR
 	[CustomEditor(typeof(GoogleSpreadSheetReader))]
 	public class GoogleSpreadSheetEditor : Editor
 	{
+		private static readonly string SheetID = "1vozS06evrJUWsLwDRHl-uuSZ1QLOV-By0qt_2cMBO4k";
+
+		private static readonly string[] WorkSheetList =
+		{
+			"Item"
+		};
+
 		private GoogleSpreadSheetReader _reader;
 		private int _selectedWorkSheetIndex = 0;
 		private string _currentWorkSheet = "";
@@ -131,42 +245,42 @@ namespace ProjectRoulette
 
 			if (GUILayout.Button("Get SO Assets"))
 			{
-				_reader.SetSOAssetsInList(_types[_selectedTypeIndex]);
+				_reader.RefreshSOAssets(_types[_selectedTypeIndex]);
 			}
 
 			if (GUILayout.Button("Get All SO Assets"))
 			{
 				foreach (var type in _types)
 				{
-					_reader.SetSOAssetsInList(type);
+					_reader.RefreshSOAssets(type);
 				}
 			}
 
 			GUILayout.Label("");
 			_selectedWorkSheetIndex =
-				EditorGUILayout.Popup("Data Type", _selectedWorkSheetIndex, _reader.WorkSheetList);
-			_currentWorkSheet = _reader.WorkSheetList[_selectedWorkSheetIndex];
+				EditorGUILayout.Popup("Data Type", _selectedWorkSheetIndex, WorkSheetList);
+			_currentWorkSheet = WorkSheetList[_selectedWorkSheetIndex];
 
-			if (GUILayout.Button("Pull Data"))
+			if (GUILayout.Button("Refresh Data"))
 			{
-				UpdateData(_currentWorkSheet);
+				RefreshData(_currentWorkSheet);
 			}
 
-			if (GUILayout.Button("Pull All Data"))
+			if (GUILayout.Button("Refresh All Data"))
 			{
-				foreach (var sheet in _reader.WorkSheetList)
+				foreach (var sheet in WorkSheetList)
 				{
-					UpdateData(sheet);
+					RefreshData(sheet);
 				}
 			}
 		}
 
-		private void UpdateData(string currentWorkSheet)
+		private void RefreshData(string currentWorkSheet)
 		{
 			switch (currentWorkSheet)
 			{
 				case "Item":
-					SpreadsheetManager.Read(new GSTU_Search(_reader.SheetID, currentWorkSheet), _reader.UpdateData);
+					SpreadsheetManager.Read(new GSTU_Search(SheetID, currentWorkSheet), _reader.UpdateData);
 					_reader.UpdateDataType = typeof(ItemSO);
 					break;
 				default:

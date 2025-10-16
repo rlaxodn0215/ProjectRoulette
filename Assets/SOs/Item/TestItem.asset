@@ -12,4 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3401c2e38b5a6404a9c34fa18615d828, type: 3}
   m_Name: TestItem
   m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.ItemSO
-  Key: 0
+  Key: 4
+  LocalizationKey: 4
+  UseType:
+  - Equip
+  OperateRate: 500
+  Symbol:
+  - None
+  SymbolRate: 0
+  Pattern:
+  - Width_3
+  - Width_4
+  - Width_5
+  PatternRate: 2000
+  Cost: 0
+  CostRate: 0
+  MoneyRate: 0
+  Life: 9999
+  LifeRate: 0
+  DeathRate: 0
+  AvoidDeath: 0

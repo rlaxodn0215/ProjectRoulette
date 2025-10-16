@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: GoogleSpreadSheetReader
   m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.GoogleSpreadSheetReader
   items:
-  - {fileID: 11400000, guid: 1f4a68983e2698742b3f015266b4eb8f, type: 2}
+  - {fileID: 11400000, guid: 011bda9de71dfac4c9f1ed0bece23cc6, type: 2}
