@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3401c2e38b5a6404a9c34fa18615d828, type: 3}
   m_Name: TestSO
   m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.ItemSO
-  Key: 2
+  Key: 3
   LocalizationKey: 0
   UseType: []
   OperateRate: 0

@@ -8,8 +8,8 @@ using UnityEngine;
 
 namespace ProjectRoulette
 {
-	[CreateAssetMenu(fileName = "GoogleSpreadSheetReader", menuName = "Scriptable Objects/GoogleSpreadSheetReader")]
-	public class GoogleSpreadSheetReader : ScriptableObject
+	[CreateAssetMenu(fileName = "GoogleSpreadSheetManager", menuName = "Scriptable Objects/GoogleSpreadSheetManager")]
+	public class GoogleSpreadSheetManager : ScriptableObject
 	{
 		/// <summary>
 		/// 정보를 갱신할 SO 모음
@@ -17,15 +17,17 @@ namespace ProjectRoulette
 
 		#region Data
 
-		public List<ItemSO> items = new List<ItemSO>();
+		[SerializeField]
+		private List<ItemSO> items = new List<ItemSO>();
 
 		#endregion
 
-		[HideInInspector] public Type UpdateDataType = null;
+		public Type UpdateDataType = null;
+		public Type SendDataType = null;
 
 		// TODO: GobalOption으로 수정
-		public static string TITLE_KEY = "Key";
-		public static string IGNORE_PREFIX = "#";
+		private string TITLE_KEY = "Key";
+		private string IGNORE_PREFIX = "#";
 
 		/// <summary>
 		/// 데이터 갱신
@@ -36,63 +38,31 @@ namespace ProjectRoulette
 			switch (UpdateDataType)
 			{
 				case not null when UpdateDataType == typeof(ItemSO):
-					UpdateData(ss, items);
+					RewriteTargetScript(nameof(ItemSO), ss); // Script 갱신
+					RefreshSOAssets(typeof(ItemSO)); // SO 갱신
+					UpdateData(ss, items); // 데이터 갱신
 					break;
 				default:
-					Debug.LogError("No such type");
+					Debug.LogError("No such type : " + UpdateDataType);
 					break;
 			}
 		}
 
 		/// <summary>
-		/// SO 목록 갱신
+		/// 데이어 sheet로 보내기
 		/// </summary>
-		/// <param name="type"></param>
-		public void RefreshSOAssets(string type)
+		/// <param name="ss"></param>
+		public void SendData(GstuSpreadSheet ss)
 		{
-			switch (type)
+			switch (UpdateDataType)
 			{
-				case nameof(ItemSO):
-					items = GetSOAssets<ItemSO>();
+				case not null when SendDataType == typeof(ItemSO):
+					SendData(ss, items); // 데이터 전송
 					break;
 				default:
-					Debug.LogError("No such type");
+					Debug.LogError("No such type : " + SendDataType);
 					break;
 			}
-		}
-
-		/// <summary>
-		/// 해당 타입의 SO를 모두 가져오는 함수
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		private List<T> GetSOAssets<T>() where T : SOBase
-		{
-			var guids = AssetDatabase.FindAssets("t:" + typeof(T).Name);
-			if (guids.Length == 0)
-			{
-				Debug.LogError("Assets not found - name : " + typeof(T).Name);
-				return null;
-			}
-
-			var soList = new List<T>();
-			foreach (var guid in guids)
-			{
-				var path = AssetDatabase.GUIDToAssetPath(guid);
-				if (path.Length == 0)
-				{
-					Debug.LogError("Assets not found - guid : " + guid);
-					continue;
-				}
-
-				var so = AssetDatabase.LoadAssetAtPath<T>(path);
-				if (so)
-				{
-					soList.Add(so);
-				}
-			}
-
-			return soList;
 		}
 
 		/// <summary>
@@ -103,11 +73,6 @@ namespace ProjectRoulette
 		/// <typeparam name="T"></typeparam>
 		private void UpdateData<T>(GstuSpreadSheet ss, List<T> soList) where T : SOBase
 		{
-			// Script 갱신
-			var typeName = typeof(T).Name;
-			RewriteTargetScript(typeName, ss);
-			RefreshSOAssets(typeName);
-
 			var ssRow = ss.rows.secondaryKeyLink;
 			var ssCol = ss.columns.secondaryKeyLink;
 			if (ssRow == null || ssCol == null)
@@ -211,10 +176,76 @@ namespace ProjectRoulette
 				return null; // 못 찾은 경우
 			}
 		}
+
+		/// <summary>
+		/// SO 목록 갱신
+		/// </summary>
+		/// <param name="type"></param>
+		private void RefreshSOAssets(Type type)
+		{
+			switch (type)
+			{
+				case not null when UpdateDataType == typeof(ItemSO):
+					items = GetSOAssets<ItemSO>();
+					break;
+				default:
+					Debug.LogError("No such type");
+					break;
+			}
+		}
+
+		/// <summary>
+		/// 해당 타입의 SO를 모두 가져오는 함수
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		private List<T> GetSOAssets<T>() where T : SOBase
+		{
+			var guids = AssetDatabase.FindAssets("t:" + typeof(T).Name);
+			if (guids.Length == 0)
+			{
+				Debug.LogError("Assets not found - name : " + typeof(T).Name);
+				return null;
+			}
+
+			var soList = new List<T>();
+			foreach (var guid in guids)
+			{
+				var path = AssetDatabase.GUIDToAssetPath(guid);
+				if (path.Length == 0)
+				{
+					Debug.LogError("Assets not found - guid : " + guid);
+					continue;
+				}
+
+				var so = AssetDatabase.LoadAssetAtPath<T>(path);
+				if (so)
+				{
+					soList.Add(so);
+				}
+			}
+
+			return soList;
+		}
+
+		/// <summary>
+		/// 데이터 전송하는 함수
+		/// </summary>
+		/// <param name="ss"></param>
+		/// <param name="soList"> 전송 대상 List</param>
+		/// <typeparam name="T"></typeparam>
+		private void SendData<T>(GstuSpreadSheet ss, List<T> soList) where T : SOBase
+		{
+			// BatchRequestBody updateRequest = new BatchRequestBody();
+			// updateRequest.Add(ss[animal.name, "Health"].AddCellToBatchUpdate(animal.associatedSheet, animal.associatedWorksheet, animal.health.ToString()));
+			// updateRequest.Add(ss[animal.name, "Defence"].AddCellToBatchUpdate(animal.associatedSheet, animal.associatedWorksheet, animal.health.ToString()));
+			// updateRequest.Add(ss[animal.name, "Attack"].AddCellToBatchUpdate(animal.associatedSheet, animal.associatedWorksheet, animal.health.ToString()));
+			// updateRequest.Send(animal.associatedSheet, animal.associatedWorksheet, null);
+		}
 	}
 
 #if UNITY_EDITOR
-	[CustomEditor(typeof(GoogleSpreadSheetReader))]
+	[CustomEditor(typeof(GoogleSpreadSheetManager))]
 	public class GoogleSpreadSheetEditor : Editor
 	{
 		private static readonly string SheetID = "1vozS06evrJUWsLwDRHl-uuSZ1QLOV-By0qt_2cMBO4k";
@@ -224,7 +255,7 @@ namespace ProjectRoulette
 			"Item"
 		};
 
-		private GoogleSpreadSheetReader _reader;
+		private GoogleSpreadSheetManager _manager;
 		private int _selectedWorkSheetIndex = 0;
 		private string _currentWorkSheet = "";
 
@@ -233,55 +264,64 @@ namespace ProjectRoulette
 
 		private void OnEnable()
 		{
-			_reader = (GoogleSpreadSheetReader)target;
+			_manager = (GoogleSpreadSheetManager)target;
 		}
 
 		public override void OnInspectorGUI()
 		{
 			base.OnInspectorGUI();
 
-			GUILayout.Label("");
-			_selectedTypeIndex = EditorGUILayout.Popup("SO Type", _selectedTypeIndex, _types);
+			// GUILayout.Label("");
+			// _selectedTypeIndex = EditorGUILayout.Popup("SO Type", _selectedTypeIndex, _types);
+			//
+			// if (GUILayout.Button("Get SO Assets"))
+			// {
+			// 	_reader.RefreshSOAssets(_types[_selectedTypeIndex]);
+			// }
+			//
+			// if (GUILayout.Button("Get All SO Assets"))
+			// {
+			// 	foreach (var type in _types)
+			// 	{
+			// 		_reader.RefreshSOAssets(type);
+			// 	}
+			// }
+			//
+			// GUILayout.Label("");
+			// _selectedWorkSheetIndex =
+			// 	EditorGUILayout.Popup("Data Type", _selectedWorkSheetIndex, WorkSheetList);
+			// _currentWorkSheet = WorkSheetList[_selectedWorkSheetIndex];
+			//
+			// if (GUILayout.Button("Refresh Data"))
+			// {
+			// 	RefreshData(_currentWorkSheet);
+			// }
 
-			if (GUILayout.Button("Get SO Assets"))
-			{
-				_reader.RefreshSOAssets(_types[_selectedTypeIndex]);
-			}
-
-			if (GUILayout.Button("Get All SO Assets"))
-			{
-				foreach (var type in _types)
-				{
-					_reader.RefreshSOAssets(type);
-				}
-			}
-
-			GUILayout.Label("");
-			_selectedWorkSheetIndex =
-				EditorGUILayout.Popup("Data Type", _selectedWorkSheetIndex, WorkSheetList);
-			_currentWorkSheet = WorkSheetList[_selectedWorkSheetIndex];
-
-			if (GUILayout.Button("Refresh Data"))
-			{
-				RefreshData(_currentWorkSheet);
-			}
-
-			if (GUILayout.Button("Refresh All Data"))
+			if (GUILayout.Button("Pull All Data"))
 			{
 				foreach (var sheet in WorkSheetList)
 				{
-					RefreshData(sheet);
+					PullData(sheet);
 				}
+			}
+
+			if (GUILayout.Button("Push All Data"))
+			{
+				Debug.Log("나중에 만들어 주세용~~^^");
+				// foreach (var sheet in WorkSheetList)
+				// {
+				// 	PushData(sheet);
+				// }
 			}
 		}
 
-		private void RefreshData(string currentWorkSheet)
+		private void PullData(string currentWorkSheet)
 		{
 			switch (currentWorkSheet)
 			{
 				case "Item":
-					SpreadsheetManager.Read(new GSTU_Search(SheetID, currentWorkSheet), _reader.UpdateData);
-					_reader.UpdateDataType = typeof(ItemSO);
+					SpreadsheetManager.Read(new GSTU_Search(SheetID, currentWorkSheet), _manager.UpdateData);
+					_manager.UpdateDataType = typeof(ItemSO);
 					break;
 				default:
 					Debug.LogError("No such sheet");
@@ -290,7 +330,23 @@ namespace ProjectRoulette
 
 			EditorUtility.SetDirty(target);
 		}
-	}
 
+		private void PushData(string currentWorkSheet)
+		{
+			switch (currentWorkSheet)
+			{
+				case "Item":
+					// 데이터 한 번 pull 받은 다음 push한다.
+					SpreadsheetManager.Read(new GSTU_Search(SheetID, currentWorkSheet), _manager.SendData);
+					_manager.SendDataType = typeof(ItemSO);
+					break;
+				default:
+					//Debug.LogError("No such sheet");
+					break;
+			}
+
+			EditorUtility.SetDirty(target);
+		}
+	}
 #endif
 }
