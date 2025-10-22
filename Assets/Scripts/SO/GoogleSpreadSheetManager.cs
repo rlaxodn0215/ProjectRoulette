@@ -17,8 +17,7 @@ namespace ProjectRoulette
 
 		#region Data
 
-		[SerializeField]
-		private List<ItemSO> items = new List<ItemSO>();
+		[SerializeField] private List<ItemSO> items = new List<ItemSO>();
 
 		#endregion
 
@@ -30,6 +29,23 @@ namespace ProjectRoulette
 		private string IGNORE_PREFIX = "#";
 
 		/// <summary>
+		/// SO 목록 갱신
+		/// </summary>
+		/// <param name="type"></param>
+		public void GetSOAssets(string type)
+		{
+			switch (type)
+			{
+				case nameof(ItemSO):
+					items = GetSOAssets<ItemSO>();
+					break;
+				default:
+					Debug.LogError("No such type : " + type);
+					break;
+			}
+		}
+
+		/// <summary>
 		/// 데이터 갱신
 		/// </summary>
 		/// <param name="ss"></param>
@@ -39,7 +55,6 @@ namespace ProjectRoulette
 			{
 				case not null when UpdateDataType == typeof(ItemSO):
 					RewriteTargetScript(nameof(ItemSO), ss); // Script 갱신
-					RefreshSOAssets(typeof(ItemSO)); // SO 갱신
 					UpdateData(ss, items); // 데이터 갱신
 					break;
 				default:
@@ -178,23 +193,6 @@ namespace ProjectRoulette
 		}
 
 		/// <summary>
-		/// SO 목록 갱신
-		/// </summary>
-		/// <param name="type"></param>
-		private void RefreshSOAssets(Type type)
-		{
-			switch (type)
-			{
-				case not null when UpdateDataType == typeof(ItemSO):
-					items = GetSOAssets<ItemSO>();
-					break;
-				default:
-					Debug.LogError("No such type");
-					break;
-			}
-		}
-
-		/// <summary>
 		/// 해당 타입의 SO를 모두 가져오는 함수
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
@@ -279,13 +277,6 @@ namespace ProjectRoulette
 			// 	_reader.RefreshSOAssets(_types[_selectedTypeIndex]);
 			// }
 			//
-			// if (GUILayout.Button("Get All SO Assets"))
-			// {
-			// 	foreach (var type in _types)
-			// 	{
-			// 		_reader.RefreshSOAssets(type);
-			// 	}
-			// }
 			//
 			// GUILayout.Label("");
 			// _selectedWorkSheetIndex =
@@ -297,12 +288,24 @@ namespace ProjectRoulette
 			// 	RefreshData(_currentWorkSheet);
 			// }
 
+			if (GUILayout.Button("Get All SO Assets"))
+			{
+				foreach (var type in _types)
+				{
+					_manager.GetSOAssets(type);
+				}
+
+				Debug.Log("[GoogleSpreadSheetManager] : Get All SO Assets Finished");
+			}
+
 			if (GUILayout.Button("Pull All Data"))
 			{
 				foreach (var sheet in WorkSheetList)
 				{
 					PullData(sheet);
 				}
+				
+				Debug.Log("[GoogleSpreadSheetManager] : Pull All Data Finished");
 			}
 
 			if (GUILayout.Button("Push All Data"))
@@ -312,6 +315,7 @@ namespace ProjectRoulette
 				// {
 				// 	PushData(sheet);
 				// }
+				// Debug.Log("[GoogleSpreadSheetManager] : Push All Data Finished");
 			}
 		}
 
@@ -324,11 +328,13 @@ namespace ProjectRoulette
 					_manager.UpdateDataType = typeof(ItemSO);
 					break;
 				default:
-					Debug.LogError("No such sheet");
+					Debug.LogError("No such sheet : " + currentWorkSheet);
 					break;
 			}
 
 			EditorUtility.SetDirty(target);
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 		}
 
 		private void PushData(string currentWorkSheet)
@@ -341,11 +347,13 @@ namespace ProjectRoulette
 					_manager.SendDataType = typeof(ItemSO);
 					break;
 				default:
-					//Debug.LogError("No such sheet");
+					//Debug.LogError("No such sheet : " + currentWorkSheet);
 					break;
 			}
 
 			EditorUtility.SetDirty(target);
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 		}
 	}
 #endif

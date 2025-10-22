@@ -53,6 +53,7 @@ namespace ProjectRoulette
 			sb.AppendLine("using UnityEngine;");
 			sb.AppendLine("using System;");
 			sb.AppendLine("using System.Collections.Generic;");
+			sb.AppendLine("using UnityEditor;");
 			sb.AppendLine();
 			sb.AppendLine("namespace ProjectRoulette");
 			sb.AppendLine("{");
@@ -132,6 +133,10 @@ namespace ProjectRoulette
 				}
 			}
 
+			sb.AppendLine();
+			sb.AppendLine("			EditorUtility.SetDirty(this);");
+			sb.AppendLine("			AssetDatabase.SaveAssets();");
+			sb.AppendLine("			AssetDatabase.Refresh();");
 			sb.AppendLine("		}");
 			sb.AppendLine("	}");
 			sb.AppendLine("	#endif");

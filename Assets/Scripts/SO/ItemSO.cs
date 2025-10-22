@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 
 namespace ProjectRoulette
 {
@@ -95,6 +96,10 @@ namespace ProjectRoulette
 			{
 				try { AvoidDeath = (bool)Convert.ChangeType(dataList[13], typeof(bool)); } catch { }
 			}
+
+			EditorUtility.SetDirty(this);
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 		}
 	}
 	#endif
