@@ -9,21 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3401c2e38b5a6404a9c34fa18615d828, type: 3}
-  m_Name: TestSO
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.ItemSO
-  Key: 3
-  LocalizationKey: 0
-  UseType: []
-  OperateRate: 0
-  Symbol: []
-  SymbolRate: 0
-  Pattern: []
+  m_Script: {fileID: 11500000, guid: 5f2c7696fcb0b5840ab22e606a1e36a8, type: 3}
+  m_Name: Test2
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.ItemData
+  Key: 2
+  LocalizationKey: 2
+  UseType: 
+  OperateRate: 1000
+  Symbol: 
+  SymbolRate: 2000
+  Pattern: 
   PatternRate: 0
-  Cost: 0
+  Cost: 5
   CostRate: 0
   MoneyRate: 0
-  Life: 0
+  Life: 1
   LifeRate: 0
   DeathRate: 0
   AvoidDeath: 0

@@ -9,8 +9,6 @@ namespace ProjectRoulette
 {
 	public class SOBase : ScriptableObject
 	{
-		public int Key;
-
 		public virtual void UpdateData(List<string> dataList)
 		{
 			InitAllData();
@@ -47,6 +45,18 @@ namespace ProjectRoulette
 		/// <returns></returns>
 		public static string GetNewScript(string className, List<string> dataList)
 		{
+			// sheet name + "Data"
+			return className switch
+			{
+				"ItemData" => GetItemDataScript(className, dataList),
+				// Symbol
+				// GlobalOption
+				_ => ""
+			};
+		}
+		
+		private static string GetItemDataScript(string className, List<string> dataList)
+		{ 
 			var sb = new StringBuilder();
 
 			// using 및 네임스페이스
@@ -83,12 +93,6 @@ namespace ProjectRoulette
 
 				var variableName = item.Substring(0, openParen).Trim();
 				var typeName = item.Substring(openParen + 1, closeParen - openParen - 1).Trim();
-
-				// Key 제외
-				if (variableName.Equals("Key", StringComparison.OrdinalIgnoreCase))
-				{
-					continue;
-				}
 
 				fields.Add((typeName, variableName));
 

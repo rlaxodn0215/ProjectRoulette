@@ -4,29 +4,25 @@ using UnityEngine.Events;
 
 namespace ProjectRoulette
 {
-	public enum ESymbolType
-	{
-		Diamond,
-		Heart,
-		Clover,
-		Spade,
-		Max,
-		None
-	}
-
 	public class PointInfo
 	{
 		public int Point;
-		public int Count;
+	}
+
+	public class SlotController
+	{
+		public ESymbolType SymbolType;
+
+		public SlotController(ESymbolType symbolType)
+		{
+			SymbolType = symbolType;
+		}
 	}
 
 	public class RouletteManager
 	{
-		public const int RowCount = 4;
-		public const int ColCount = 5;
-
-		public List<ESymbolType> ListBoardButtons = new List<ESymbolType>(RowCount * ColCount);
-		public int DeathSwitchIndex = -1;
+		public List<SlotController> ListSlotControllers = new List<SlotController>();
+		public int DeathSlotIndex = -1;
 
 		public ESymbolType CurrentSymbolType = ESymbolType.None;
 		public ESymbolType NextSymbolType = ESymbolType.None;
@@ -34,33 +30,34 @@ namespace ProjectRoulette
 		public int Point = 0;
 
 		public UnityEvent<int> OnPointChanged = new UnityEvent<int>();
-		public UnityEvent<int, ESymbolType> OnButtonClicked = new UnityEvent<int, ESymbolType>();
-		public UnityEvent<int> OnDeathSwitchClicked = new UnityEvent<int>();
-		public readonly UnityEvent<ESymbolType> OnUpdateSymbolType = new UnityEvent<ESymbolType>();
+		public UnityEvent<int, ESymbolType> OnSlotClicked = new UnityEvent<int, ESymbolType>();
+		public UnityEvent OnDeathSlotClicked = new UnityEvent();
+		public UnityEvent<ESymbolType> OnUpdateSymbolType = new UnityEvent<ESymbolType>();
+		public UnityEvent OnRouletteReset = new UnityEvent();
 
 		public void Init()
 		{
-			for (var i = 0; i < ListBoardButtons.Capacity; i++)
+			for (var i = 0; i < GlobalOption.SlotRowCount * GlobalOption.SlotColCount; i++)
 			{
-				ListBoardButtons.Add(ESymbolType.None);
+				ListSlotControllers.Add(new SlotController(ESymbolType.None));
 			}
 		}
 
-		public void RefreshRouletteBoard()
+		public void ResetRouletteBoard()
 		{
-			Debug.Log("Refresh Roulette Board");
+			Debug.Log("Reset Roulette Board");
 
-			for (var i = 0; i < ListBoardButtons.Count; i++)
+			foreach (var t in ListSlotControllers)
 			{
-				ListBoardButtons[i] = ESymbolType.None;
+				t.SymbolType = ESymbolType.None;
 			}
 
-			DeathSwitchIndex = Random.Range(0, 20);
+			DeathSlotIndex = Random.Range(0, 20);
 
-			//CurrentSymbolType = (ESymbolType)Random.Range(0, (int)ESymbolType.Max);
+			// TODO: 추후 확률 적용
+			CurrentSymbolType = (ESymbolType)Random.Range(0, (int)ESymbolType.Max);
 			NextSymbolType = (ESymbolType)Random.Range(0, (int)ESymbolType.Max);
-			UpdateSymbolType();
-			UpdateSymbolType();
+			OnUpdateSymbolType?.Invoke(NextSymbolType);
 		}
 
 		public void UpdateSymbolType()
@@ -78,20 +75,20 @@ namespace ProjectRoulette
 				return;
 			}
 
-			if (index == DeathSwitchIndex)
-			{
-				Debug.Log("You Lose!");
-				RefreshRouletteBoard();
-				ResetPoint();
-				OnDeathSwitchClicked?.Invoke(index);
-				return;
-			}
-
-			ListBoardButtons[index] = CurrentSymbolType;
-			GetPointInfo();
-			//OnPointChanged?.Invoke(Point);
-			OnButtonClicked?.Invoke(index, CurrentSymbolType);
-			UpdateSymbolType();
+			// if (index == DeathSwitchIndex)
+			// {
+			// 	Debug.Log("You Lose!");
+			// 	RefreshRouletteBoard();
+			// 	ResetPoint();
+			// 	OnDeathSwitchClicked?.Invoke(index);
+			// 	return;
+			// }
+			//
+			// ListBoardButtons[index] = CurrentSymbolType;
+			// GetPointInfo();
+			// //OnPointChanged?.Invoke(Point);
+			// OnButtonClicked?.Invoke(index, CurrentSymbolType);
+			// UpdateSymbolType();
 		}
 
 		public List<PointInfo> GetPointInfo()

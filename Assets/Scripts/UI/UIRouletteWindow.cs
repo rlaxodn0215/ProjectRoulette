@@ -22,11 +22,11 @@ namespace ProjectRoulette
 
 		void Start()
 		{
-			Managers.Roulette.OnDeathSwitchClicked.AddListener(DeadSign);
-			Managers.Roulette.OnButtonClicked.AddListener(ChangeButtonSymbol);
-			Managers.Roulette.OnUpdateSymbolType.AddListener(ChangeSymbolUI);
-			_resetButton.onClick.AddListener(ResetButton);
-			Managers.Roulette.RefreshRouletteBoard();
+			// Managers.Roulette.OnDeathSwitchClicked.AddListener(DeadSign);
+			// Managers.Roulette.OnButtonClicked.AddListener(ChangeButtonSymbol);
+			// Managers.Roulette.OnUpdateSymbolType.AddListener(ChangeSymbolUI);
+			// _resetButton.onClick.AddListener(ResetButton);
+			// Managers.Roulette.RefreshRouletteBoard();
 		}
 
 		void Update()
@@ -51,7 +51,7 @@ namespace ProjectRoulette
 		private void ResetButton()
 		{
 			_deadSign.SetActive(false);
-			Managers.Roulette.RefreshRouletteBoard();
+			//Managers.Roulette.RefreshRouletteBoard();
 			foreach (var text in _buttonTexts)
 			{
 				text.text = "";
