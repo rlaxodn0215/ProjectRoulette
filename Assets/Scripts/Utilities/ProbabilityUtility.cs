@@ -5,6 +5,7 @@ namespace ProjectRoulette
 {
 	public class ProbabilityUtility
 	{
+		private static readonly int ProbabilityMaxCount = Managers.Data.GetGlobalValueData().ProbabilityMaxCount;
 		public static int GetRandomProbability(List<int> probabilityList)
 		{
 			var sum = 0;
@@ -20,7 +21,7 @@ namespace ProjectRoulette
 			}
 
 			sum = 0;
-			var randomNum = Random.Range(1, GlobalOption.ProbabilityMaxCount + 1);
+			var randomNum = Random.Range(1, ProbabilityMaxCount + 1);
 			for (var i = 0; i < probabilityList.Count; i++)
 			{
 				sum += probabilityList[i];
@@ -35,7 +36,7 @@ namespace ProjectRoulette
 
 		public static bool IsChanceSuccess(int probability)
 		{
-			return Random.Range(0, GlobalOption.ProbabilityMaxCount) < probability;
+			return Random.Range(0, ProbabilityMaxCount) < probability;
 		}
 	}
 }

@@ -150,8 +150,10 @@ namespace ProjectRoulette
 				var fileName = "NoName";
 				foreach (var col in ssCol)
 				{
-					// #으로 시작하면 무시
+					// 변수 명이 #으로 시작하면 무시
 					if (col.Key.StartsWith(IGNORE_PREFIX)) continue;
+					// 셀 데이터가 #으로 시작하면 무시
+					if(ss[row.Key, col.Key].value.StartsWith(IGNORE_PREFIX)) continue;
 
 					// SO 이름 추출
 					if (col.Key.Equals(DATA_NAME, StringComparison.OrdinalIgnoreCase))
@@ -212,9 +214,9 @@ namespace ProjectRoulette
 		};
 
 		private GoogleSpreadSheetReader _reader;
-		private string _currentWorkSheet = "";
-		private int _selectedTypeIndex = 0;
-		private int _selectedWorkSheetIndex = 0;
+		// private string _currentWorkSheet = "";
+		// private int _selectedTypeIndex = 0;
+		// private int _selectedWorkSheetIndex = 0;
 
 		private void OnEnable()
 		{

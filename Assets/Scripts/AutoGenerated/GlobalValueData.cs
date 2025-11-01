@@ -9,8 +9,9 @@ namespace ProjectRoulette
 	public class GlobalValueData : SOBase
 	{
 		public int Key;
-		public string TestOption_1;
-		public float TestingOne;
+		public int SlotRowCount;
+		public int SlotColCount;
+		public int ProbabilityMaxCount;
 
 	#if UNITY_EDITOR
 		public override void UpdateData(List<string> dataList)
@@ -23,11 +24,15 @@ namespace ProjectRoulette
 			}
 			if (dataList.Count > 1 && !string.IsNullOrEmpty(dataList[1]))
 			{
-				try { TestOption_1 = (string)Convert.ChangeType(dataList[1], typeof(string)); } catch { }
+				try { SlotRowCount = (int)Convert.ChangeType(dataList[1], typeof(int)); } catch { }
 			}
 			if (dataList.Count > 2 && !string.IsNullOrEmpty(dataList[2]))
 			{
-				try { TestingOne = (float)Convert.ChangeType(dataList[2], typeof(float)); } catch { }
+				try { SlotColCount = (int)Convert.ChangeType(dataList[2], typeof(int)); } catch { }
+			}
+			if (dataList.Count > 3 && !string.IsNullOrEmpty(dataList[3]))
+			{
+				try { ProbabilityMaxCount = (int)Convert.ChangeType(dataList[3], typeof(int)); } catch { }
 			}
 
 			EditorUtility.SetDirty(this);

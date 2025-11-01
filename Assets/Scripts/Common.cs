@@ -4,34 +4,47 @@ namespace ProjectRoulette
 {
 	public enum ESymbolType
 	{
+		None,
 		Diamond,
 		Heart,
-		Clover,
 		Spade,
+		Clover,
 		Max,
-		None
 	}
 
 	public enum EPatternType
 	{
+		None,
 		Width3,
 		Width4,
 		Width5,
 		Height3,
 		Height4,
 		Max,
-		None
 	}
 
 	public enum EItemUseType
 	{
+		None,
 		Equip,
-		Instant
+		Instant,
+		Max,
 	}
 
 	// Enum 값 = 아이템 Key 값
 	public enum EItem
 	{
+		None,
 		TestItem = 1,
+		Max,
+	}
+	
+	// Enum 값 = Symbol 데이터 Key 값
+	public enum ESymbolData
+	{
+		None,
+		SymbolChance = 1,
+		SymbolCost = 2,
+		Max,
 	}
 }

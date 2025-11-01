@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1584eb8943748a34c8799a97d7de3856, type: 3}
-  m_Name: TestSymbol
+  m_Name: SymbolChance
   m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.SymbolData
   Key: 1
   Diamond: 250

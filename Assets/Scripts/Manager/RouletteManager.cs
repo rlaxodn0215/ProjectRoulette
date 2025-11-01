@@ -37,7 +37,7 @@ namespace ProjectRoulette
 
 		public void Init()
 		{
-			for (var i = 0; i < GlobalOption.SlotRowCount * GlobalOption.SlotColCount; i++)
+			for (var i = 0; i < Managers.Data.GetGlobalValueData().SlotRowCount * Managers.Data.GetGlobalValueData().SlotColCount; i++)
 			{
 				ListSlotControllers.Add(new SlotController(ESymbolType.None));
 			}
