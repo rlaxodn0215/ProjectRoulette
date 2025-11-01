@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34b8fa2b3a01900439d2adf0baf46fa4, type: 3}
   m_Name: GoogleSpreadSheetReader
   m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.GoogleSpreadSheetManager
-  SheetName: Item
+  SheetName: GlobalValue
   newClasses:
   - ItemData
+  - SymbolData
+  - GlobalValueData

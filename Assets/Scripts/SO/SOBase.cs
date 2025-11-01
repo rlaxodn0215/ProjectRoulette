@@ -45,18 +45,6 @@ namespace ProjectRoulette
 		/// <returns></returns>
 		public static string GetNewScript(string className, List<string> dataList)
 		{
-			// sheet name + "Data"
-			return className switch
-			{
-				"ItemData" => GetItemDataScript(className, dataList),
-				// Symbol
-				// GlobalOption
-				_ => ""
-			};
-		}
-		
-		private static string GetItemDataScript(string className, List<string> dataList)
-		{ 
 			var sb = new StringBuilder();
 
 			// using 및 네임스페이스
