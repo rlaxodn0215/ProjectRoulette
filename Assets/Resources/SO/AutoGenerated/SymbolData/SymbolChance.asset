@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: SymbolChance
   m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.SymbolData
   Key: 1
-  Diamond: 250
-  Heart: 250
-  Spade: 250
-  Clover: 250
+  A: 200
+  B: 200
+  C: 200
+  D: 200
+  E: 200

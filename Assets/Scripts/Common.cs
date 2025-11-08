@@ -5,10 +5,11 @@ namespace ProjectRoulette
 	public enum ESymbolType
 	{
 		None,
-		Diamond,
-		Heart,
-		Spade,
-		Clover,
+		A,
+		B,
+		C,
+		D,
+		E,
 		Max,
 	}
 
@@ -28,6 +29,7 @@ namespace ProjectRoulette
 		None,
 		Equip,
 		Instant,
+		Constant,
 		Max,
 	}
 
@@ -44,7 +46,7 @@ namespace ProjectRoulette
 	{
 		None,
 		SymbolChance = 1,
-		SymbolCost = 2,
+		SymbolPoint = 2,
 		Max,
 	}
 }

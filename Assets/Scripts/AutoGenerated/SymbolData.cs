@@ -9,10 +9,11 @@ namespace ProjectRoulette
 	public class SymbolData : SOBase
 	{
 		public int Key;
-		public int Diamond;
-		public int Heart;
-		public int Spade;
-		public int Clover;
+		public int A;
+		public int B;
+		public int C;
+		public int D;
+		public int E;
 
 	#if UNITY_EDITOR
 		public override void UpdateData(List<string> dataList)
@@ -25,19 +26,23 @@ namespace ProjectRoulette
 			}
 			if (dataList.Count > 1 && !string.IsNullOrEmpty(dataList[1]))
 			{
-				try { Diamond = (int)Convert.ChangeType(dataList[1], typeof(int)); } catch { }
+				try { A = (int)Convert.ChangeType(dataList[1], typeof(int)); } catch { }
 			}
 			if (dataList.Count > 2 && !string.IsNullOrEmpty(dataList[2]))
 			{
-				try { Heart = (int)Convert.ChangeType(dataList[2], typeof(int)); } catch { }
+				try { B = (int)Convert.ChangeType(dataList[2], typeof(int)); } catch { }
 			}
 			if (dataList.Count > 3 && !string.IsNullOrEmpty(dataList[3]))
 			{
-				try { Spade = (int)Convert.ChangeType(dataList[3], typeof(int)); } catch { }
+				try { C = (int)Convert.ChangeType(dataList[3], typeof(int)); } catch { }
 			}
 			if (dataList.Count > 4 && !string.IsNullOrEmpty(dataList[4]))
 			{
-				try { Clover = (int)Convert.ChangeType(dataList[4], typeof(int)); } catch { }
+				try { D = (int)Convert.ChangeType(dataList[4], typeof(int)); } catch { }
+			}
+			if (dataList.Count > 5 && !string.IsNullOrEmpty(dataList[5]))
+			{
+				try { E = (int)Convert.ChangeType(dataList[5], typeof(int)); } catch { }
 			}
 
 			EditorUtility.SetDirty(this);

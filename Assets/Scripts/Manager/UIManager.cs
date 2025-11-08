@@ -2,9 +2,14 @@ using UnityEngine;
 
 namespace ProjectRoulette
 {
-	public class UIManager
+	public class UIManager : IManagerInit
 	{
-		public void Init()
+		public void InitAwake()
+		{
+			
+		}
+
+		public void InitStart()
 		{
 			
 		}

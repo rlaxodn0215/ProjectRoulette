@@ -2,21 +2,25 @@ using UnityEngine;
 
 namespace ProjectRoulette
 {
+	public interface IManagerInit
+	{
+		public void InitAwake();
+		public void InitStart();
+	}
+
 	public class Managers : MonoBehaviour
 	{
 		private static Managers _instance;
 
 		private DataManager _data = new DataManager();
-		private RouletteManager _roulette = new RouletteManager();
-		private UIManager _ui = new UIManager();
 		private ItemManager _item = new ItemManager();
-		private GameplayManger _gameplay = new GameplayManger();
+		private UIManager _ui = new UIManager();
+		private GameManger _game = new GameManger();
 
 		public static DataManager Data => _instance._data;
-		public static RouletteManager Roulette => _instance._roulette;
-		public static UIManager UI => _instance._ui;
 		public static ItemManager Item => _instance._item;
-		public static GameplayManger Gameplay => _instance._gameplay;
+		public static UIManager UI => _instance._ui;
+		public static GameManger Game => _instance._game;
 
 		private void Awake()
 		{
@@ -28,21 +32,32 @@ namespace ProjectRoulette
 
 			_instance = this;
 			DontDestroyOnLoad(gameObject);
-			Init();
+			InitAwake();
 		}
 
-		private static void Init()
+		private void Start()
 		{
-			Data.Init();
-			Roulette.Init();
-			UI.Init();
-			Item.Init();
-			Gameplay.Init();
+			InitStart();
 		}
 
-		public static void Clear()
+		private void InitAwake()
 		{
-			
+			Data.InitAwake();
+			Item.InitAwake();
+			UI.InitAwake();
+			Game.InitAwake();
+		}
+
+		private void InitStart()
+		{
+			Data.InitStart();
+			Item.InitStart();
+			UI.InitStart();
+			Game.InitStart();
+		}
+
+		public void Clear()
+		{
 		}
 	}
 }
