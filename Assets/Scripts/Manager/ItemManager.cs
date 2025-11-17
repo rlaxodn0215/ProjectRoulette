@@ -6,13 +6,8 @@ namespace ProjectRoulette
 {
 	public class ItemManager : IManagerInit
 	{
-		// 아이템 관리
-		
 		// Active Items
-		public List<ItemComponent> ListActiveItems = new List<ItemComponent>();
-
-		// Player Items
-		public List<ItemComponent> ListPlayerItems = new List<ItemComponent>();
+		public List<ItemComponent> ListActiveItem = new List<ItemComponent>();
 
 		public void InitAwake()
 		{

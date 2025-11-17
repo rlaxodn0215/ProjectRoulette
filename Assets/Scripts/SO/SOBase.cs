@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace ProjectRoulette
@@ -110,8 +111,17 @@ namespace ProjectRoulette
 					sb.AppendLine($"				{name} = new List<{genericType}>();");
 					sb.AppendLine($"				foreach (var val in dataList[{i}].Split(','))");
 					sb.AppendLine("				{");
-					sb.AppendLine(
-						$"					try {{ {name}.Add(({genericType})Convert.ChangeType(val.Trim(), typeof({genericType}))); }} catch {{ }}");
+					sb.AppendLine("					try");
+					sb.AppendLine("					{");
+					sb.AppendLine($"						var targetType = typeof({genericType});");
+					sb.AppendLine($"						object converted;");
+					sb.AppendLine("						if (targetType.IsEnum)");
+					sb.AppendLine("							converted = Enum.Parse(targetType, val.Trim());");
+					sb.AppendLine("						else");
+					sb.AppendLine("							converted = Convert.ChangeType(val.Trim(), targetType);");
+					sb.AppendLine($"						{name}.Add(({genericType})converted);");
+					sb.AppendLine("					}");
+					sb.AppendLine("					catch { }");
 					sb.AppendLine("				}");
 					sb.AppendLine("			}");
 				}
@@ -119,8 +129,15 @@ namespace ProjectRoulette
 				{
 					sb.AppendLine($"			if (dataList.Count > {i} && !string.IsNullOrEmpty(dataList[{i}]))");
 					sb.AppendLine("			{");
-					sb.AppendLine(
-						$"				try {{ {name} = ({type})Convert.ChangeType(dataList[{i}], typeof({type})); }} catch {{ }}");
+					sb.AppendLine("				try");
+					sb.AppendLine("				{");
+					sb.AppendLine($"					var targetType = typeof({type});");
+					sb.AppendLine($"					if (targetType.IsEnum)");
+					sb.AppendLine($"						{name} = ({type})Enum.Parse(targetType, dataList[{i}]);");
+					sb.AppendLine("					else");
+					sb.AppendLine($"						{name} = ({type})Convert.ChangeType(dataList[{i}], targetType);");
+					sb.AppendLine("				}");
+					sb.AppendLine("				catch { }");
 					sb.AppendLine("			}");
 				}
 			}

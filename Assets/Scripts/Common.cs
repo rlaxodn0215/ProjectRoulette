@@ -2,34 +2,46 @@ using UnityEngine;
 
 namespace ProjectRoulette
 {
-	public enum ESymbolType
+	public enum ESymbol
 	{
 		None,
 		A,
 		B,
 		C,
 		D,
-		E,
+		All,
 		Max,
 	}
 
-	public enum EPatternType
+	// Enum 값 = 패턴 Key 값
+	public enum EPattern
 	{
 		None,
-		Width3,
-		Width4,
-		Width5,
-		Height3,
-		Height4,
-		Max,
-	}
-
-	public enum EItemUseType
-	{
-		None,
-		Equip,
-		Instant,
-		Constant,
+		Single,
+		Row3,
+		Row4,
+		Row5,
+		Col3,
+		Col4,
+		Col5,
+		Diag3_Main,
+		Diag4_Main,
+		Diag5_Main,
+		Diag3_Anti,
+		Diag4_Anti,
+		Diag5_Anti,
+		LShape,
+		LShape_Anti,
+		TShape,
+		Cross,
+		Square_2x2,
+		ZShape,
+		SShape,
+		Arc_Left,
+		Arc_Right,
+		Plus_Small,
+		WShape,
+		All,
 		Max,
 	}
 
@@ -37,16 +49,35 @@ namespace ProjectRoulette
 	public enum EItem
 	{
 		None,
-		TestItem = 1,
-		Max,
-	}
-	
-	// Enum 값 = Symbol 데이터 Key 값
-	public enum ESymbolData
-	{
-		None,
-		SymbolChance = 1,
-		SymbolPoint = 2,
+		A,
+		B,
+		C,
+		D,
+		Single,
+		Row3,
+		Row4,
+		Row5,
+		Col3,
+		Col4,
+		Col5,
+		Diag3_Main,
+		Diag4_Main,
+		Diag5_Main,
+		Diag3_Anti,
+		Diag4_Anti,
+		Diag5_Anti,
+		LShape,
+		LShape_Anti,
+		TShape,
+		Cross,
+		Square_2x2,
+		ZShape,
+		SShape,
+		Arc_Left,
+		Arc_Right,
+		Plus_Small,
+		WShape,
+		Apple,
 		Max,
 	}
 }

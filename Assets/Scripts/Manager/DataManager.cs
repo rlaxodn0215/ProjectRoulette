@@ -6,14 +6,16 @@ namespace ProjectRoulette
 {
 	public class DataManager : IManagerInit
 	{
+		private Dictionary<ESymbol, SymbolData> _symbolData = new Dictionary<ESymbol, SymbolData>();
+		private Dictionary<EPattern, PatternData> _patternData = new Dictionary<EPattern, PatternData>();
 		private Dictionary<EItem, ItemData> _itemData = new Dictionary<EItem, ItemData>();
-		private Dictionary<ESymbolData, SymbolData> _symbolData = new Dictionary<ESymbolData, SymbolData>();
 
 		public void InitAwake()
 		{
 			// Load Data
 			var itemData = Resources.LoadAll<ItemData>(GlobalValue.SOpath);
 			var symbolData = Resources.LoadAll<SymbolData>(GlobalValue.SOpath);
+			var patternData = Resources.LoadAll<PatternData>(GlobalValue.SOpath);
 
 			// Cache Data
 			for (var i = 1; i < (int)EItem.Max; i++)
@@ -21,9 +23,14 @@ namespace ProjectRoulette
 				_itemData[(EItem)i] = itemData.FirstOrDefault(x => x.Key == i);
 			}
 
-			for (var i = 1; i < (int)ESymbolData.Max; i++)
+			for (var i = 1; i < (int)ESymbol.Max; i++)
 			{
-				_symbolData[(ESymbolData)i] = symbolData.FirstOrDefault(x => x.Key == i);
+				_symbolData[(ESymbol)i] = symbolData.FirstOrDefault(x => x.Key == i);
+			}
+			
+			for (var i = 1; i < (int)EPattern.Max; i++)
+			{
+				_patternData[(EPattern)i] = patternData.FirstOrDefault(x => x.Key == i);
 			}
 		}
 
@@ -43,16 +50,28 @@ namespace ProjectRoulette
 			return itemData;
 		}
 
-		public SymbolData GetSymbolData(ESymbolData data)
+		public SymbolData GetSymbolData(ESymbol data)
 		{
 			var symbolData = _symbolData.GetValueOrDefault(data);
 
 			if (symbolData == null)
 			{
-				Debug.LogError("SymbolData Not Found : " + data);
+				Debug.LogError("Symbol Not Found : " + data);
 			}
 
 			return symbolData;
+		}
+		
+		public PatternData GetPatternData(EPattern item)
+		{
+			var patternData = _patternData.GetValueOrDefault(item);
+
+			if (patternData == null)
+			{
+				Debug.LogError("Pattern Not Found : " + item);
+			}
+
+			return patternData;
 		}
 
 		public void SaveGame()

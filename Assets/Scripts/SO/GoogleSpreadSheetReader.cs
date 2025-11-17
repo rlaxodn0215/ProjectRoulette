@@ -199,8 +199,9 @@ namespace ProjectRoulette
 
 		private static readonly string[] WorkSheetList =
 		{
-			"Item",
 			"Symbol",
+			"Pattern",
+			"Item"
 		};
 
 		private GoogleSpreadSheetReader _reader;

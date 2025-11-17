@@ -9,14 +9,14 @@ namespace ProjectRoulette
 {
 	public struct PointInfo
 	{
-		public decimal Point;
+		public ulong Point;
 	}
 
 	public class SlotInfo
 	{
-		public ESymbolType SymbolType;
+		public ESymbol SymbolType;
 
-		public SlotInfo(ESymbolType symbolType)
+		public SlotInfo(ESymbol symbolType)
 		{
 			SymbolType = symbolType;
 		}
@@ -27,34 +27,29 @@ namespace ProjectRoulette
 		public List<SlotInfo> ListBoardSlotInfo { get; private set; } = new List<SlotInfo>();
 		public int DeathSlotIndex { get; private set; }
 
-		public decimal Point { get; private set; }
+		public ulong Point { get; private set; }
 		public List<PointInfo> ListPointInfo { get; private set; } = new List<PointInfo>();
 
-		public ESymbolType CurrentSymbolType { get; private set; }
-		public ESymbolType NextSymbolType { get; private set; }
-
-		// public List<ItemComponent> ListActiveItem = new List<ItemComponent>();
-		// => ItemManager 이용
+		public ESymbol CurrentSymbolType { get; private set; }
+		public ESymbol NextSymbolType { get; private set; }
 
 		// Events
-		public UnityEvent<decimal> OnPointChanged = new UnityEvent<decimal>(); // decimal - 바뀐 점수
+		public UnityEvent<ulong> OnPointChanged = new UnityEvent<ulong>(); // ulong - 바뀐 점수
 
-		public UnityEvent<int, ESymbolType>
-			OnSlotClicked = new UnityEvent<int, ESymbolType>(); // int - index, ESymbolType - current symbol type
+		public UnityEvent<int, ESymbol>
+			OnSlotClicked = new UnityEvent<int, ESymbol>(); // int - index, ESymbol - current symbol type
 
 		public UnityEvent OnDeathSlotClicked = new UnityEvent();
 
-		public UnityEvent<ESymbolType>
-			OnUpdateSymbolType = new UnityEvent<ESymbolType>(); // ESymbolType - new symbol type
+		public UnityEvent<ESymbol>
+			OnUpdatESymbol = new UnityEvent<ESymbol>(); // ESymbol - new symbol type
 
 		public UnityEvent OnRouletteReset = new UnityEvent();
 
-		// Data
-		public SymbolData CurrentSymbolChanceData { get; private set; }
-		private SymbolData _symbolChanceDataCache;
-		public SymbolData CurrentSymbolPointData { get; private set; }
-		private SymbolData _symbolPointDataCache;
 
+		// 현재 룰렛에 적용되는 심볼 및 패턴
+		public List<SymbolData> ListUseSymbol { get; private set; } = new List<SymbolData>();
+		public List<PatternData> ListUsePattern { get; private set; } = new List<PatternData>();
 
 		private int _slotCount = GlobalValue.SlotRowCount * GlobalValue.SlotColCount;
 
@@ -62,12 +57,8 @@ namespace ProjectRoulette
 		{
 			for (var i = 0; i < _slotCount; i++)
 			{
-				ListBoardSlotInfo.Add(new SlotInfo(ESymbolType.None));
+				ListBoardSlotInfo.Add(new SlotInfo(ESymbol.None));
 			}
-
-			// Data Init
-			CurrentSymbolChanceData = _symbolChanceDataCache = Managers.Data.GetSymbolData(ESymbolData.SymbolChance);
-			CurrentSymbolPointData = _symbolPointDataCache = Managers.Data.GetSymbolData(ESymbolData.SymbolPoint);
 
 			RefreshBoard();
 		}
@@ -90,7 +81,7 @@ namespace ProjectRoulette
 
 			ListBoardSlotInfo[index].SymbolType = CurrentSymbolType;
 			ListPointInfo = GetPointInfo();
-			UpdateSymbolType();
+			UpdatESymbol();
 
 			OnPointChanged?.Invoke(Point);
 			OnSlotClicked?.Invoke(index, CurrentSymbolType);
@@ -102,14 +93,14 @@ namespace ProjectRoulette
 
 			foreach (var slotInfo in ListBoardSlotInfo)
 			{
-				slotInfo.SymbolType = ESymbolType.None;
+				slotInfo.SymbolType = ESymbol.None;
 			}
 
 			DeathSlotIndex = Random.Range(0, _slotCount);
 
 			CurrentSymbolType = GetNextSymbolType();
 			NextSymbolType = GetNextSymbolType();
-			OnUpdateSymbolType?.Invoke(NextSymbolType);
+			OnUpdatESymbol?.Invoke(NextSymbolType);
 		}
 
 		private List<PointInfo> GetPointInfo()
@@ -120,16 +111,16 @@ namespace ProjectRoulette
 			return list;
 		}
 
-		private decimal CalculatePoint()
+		private ulong CalculatePoint()
 		{
 			return 0;
 		}
 
-		private void UpdateSymbolType()
+		private void UpdatESymbol()
 		{
 			CurrentSymbolType = NextSymbolType;
 			NextSymbolType = GetNextSymbolType();
-			OnUpdateSymbolType?.Invoke(NextSymbolType);
+			OnUpdatESymbol?.Invoke(NextSymbolType);
 		}
 
 		private void SelectedDeathSlot()
@@ -141,18 +132,18 @@ namespace ProjectRoulette
 			DeathSlotIndex = Random.Range(0, _slotCount);
 		}
 
-		private ESymbolType GetNextSymbolType()
+		private ESymbol GetNextSymbolType()
 		{
 			var list = new List<int>
 			{
-				CurrentSymbolChanceData.A,
-				CurrentSymbolChanceData.B,
-				CurrentSymbolChanceData.C,
-				CurrentSymbolChanceData.D,
-				CurrentSymbolChanceData.E
+				// CurrentSymbolChanceData.A,
+				// CurrentSymbolChanceData.B,
+				// CurrentSymbolChanceData.C,
+				// CurrentSymbolChanceData.D,
+				// CurrentSymbolChanceData.E
 			};
 
-			return (ESymbolType)(ProbabilityUtility.GetRandomProbability(list) + 1);
+			return (ESymbol)(ProbabilityUtility.GetRandomProbability(list) + 1);
 		}
 
 		private void ResetPoint()
