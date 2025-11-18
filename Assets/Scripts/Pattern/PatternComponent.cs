@@ -12,12 +12,12 @@ namespace ProjectRoulette
 	public class PatternComponent // 정보 보여주는 UI Class 제작하기
 	{
 		public EPattern PatternName { get; private set; }
-		private readonly PatternData _patternDataCache;
+		public PatternData PatternDataCache { get; private set; }
 
 		public PatternComponent(PatternData patternData)
 		{
-			_patternDataCache = patternData;
-			PatternName = (EPattern)_patternDataCache.Key;
+			PatternDataCache = patternData;
+			PatternName = (EPattern)PatternDataCache.Key;
 		}
 
 		public PatternResultData GetPatternResultData(List<SlotInfo> slotInfoList)
@@ -42,11 +42,10 @@ namespace ProjectRoulette
 			}
 
 			// --- Pre-calc board 2D indices ---
-			var BoardSize = 5;
-			var pdata = _patternDataCache;
+			const int boardSize = 5;
 
 			// Parse pattern string -> int[25]
-			var pattern = ParsePattern(pdata.PatternType);
+			var pattern = ParsePattern(PatternDataCache.PatternType);
 			if (pattern == null || pattern.Length != 25)
 			{
 				Debug.LogError("Invalid pattern string");
@@ -60,7 +59,7 @@ namespace ProjectRoulette
 			{
 				if (pattern[i] == 1)
 				{
-					patternOnes.Add((i / BoardSize, i % BoardSize));
+					patternOnes.Add((i / boardSize, i % boardSize));
 				}
 			}
 
@@ -106,9 +105,11 @@ namespace ProjectRoulette
 
 					if (!match) continue;
 					resultData.Patterns.Add(matchedSlots);
-					resultData.Ratio += pdata.PatternRatio;
 				}
 			}
+
+			// 가산 비율 계산
+			resultData.Ratio = PatternDataCache.PatternRatio;
 
 			return resultData;
 
