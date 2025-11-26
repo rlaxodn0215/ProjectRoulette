@@ -15,4 +15,5 @@ MonoBehaviour:
   Key: 11
   LocalizationKey: 11
   PatternRatio: 1.2
+  UpgradeRatioPerRound: 1.2
   PatternType: '{0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0}'

@@ -10,13 +10,12 @@ namespace ProjectRoulette
 	{
 		public int Key;
 		public int LocalizationKey;
-		public bool CreateSymbol;
+		public EItemType ItemType;
+		public EItemSkill ItemSkill;
 		public List<ESymbol> Symbol;
 		public float SymbolValue;
-		public bool CreatePattern;
 		public List<EPattern> Pattern;
 		public float PatternValue;
-		public float AvoidDeathRatio;
 
 	#if UNITY_EDITOR
 		public override void UpdateData(List<string> dataList)
@@ -51,18 +50,30 @@ namespace ProjectRoulette
 			{
 				try
 				{
-					var targetType = typeof(bool);
+					var targetType = typeof(EItemType);
 					if (targetType.IsEnum)
-						CreateSymbol = (bool)Enum.Parse(targetType, dataList[2]);
+						ItemType = (EItemType)Enum.Parse(targetType, dataList[2]);
 					else
-						CreateSymbol = (bool)Convert.ChangeType(dataList[2], targetType);
+						ItemType = (EItemType)Convert.ChangeType(dataList[2], targetType);
 				}
 				catch { }
 			}
 			if (dataList.Count > 3 && !string.IsNullOrEmpty(dataList[3]))
 			{
+				try
+				{
+					var targetType = typeof(EItemSkill);
+					if (targetType.IsEnum)
+						ItemSkill = (EItemSkill)Enum.Parse(targetType, dataList[3]);
+					else
+						ItemSkill = (EItemSkill)Convert.ChangeType(dataList[3], targetType);
+				}
+				catch { }
+			}
+			if (dataList.Count > 4 && !string.IsNullOrEmpty(dataList[4]))
+			{
 				Symbol = new List<ESymbol>();
-				foreach (var val in dataList[3].Split(','))
+				foreach (var val in dataList[4].Split(','))
 				{
 					try
 					{
@@ -77,27 +88,15 @@ namespace ProjectRoulette
 					catch { }
 				}
 			}
-			if (dataList.Count > 4 && !string.IsNullOrEmpty(dataList[4]))
+			if (dataList.Count > 5 && !string.IsNullOrEmpty(dataList[5]))
 			{
 				try
 				{
 					var targetType = typeof(float);
 					if (targetType.IsEnum)
-						SymbolValue = (float)Enum.Parse(targetType, dataList[4]);
+						SymbolValue = (float)Enum.Parse(targetType, dataList[5]);
 					else
-						SymbolValue = (float)Convert.ChangeType(dataList[4], targetType);
-				}
-				catch { }
-			}
-			if (dataList.Count > 5 && !string.IsNullOrEmpty(dataList[5]))
-			{
-				try
-				{
-					var targetType = typeof(bool);
-					if (targetType.IsEnum)
-						CreatePattern = (bool)Enum.Parse(targetType, dataList[5]);
-					else
-						CreatePattern = (bool)Convert.ChangeType(dataList[5], targetType);
+						SymbolValue = (float)Convert.ChangeType(dataList[5], targetType);
 				}
 				catch { }
 			}
@@ -128,18 +127,6 @@ namespace ProjectRoulette
 						PatternValue = (float)Enum.Parse(targetType, dataList[7]);
 					else
 						PatternValue = (float)Convert.ChangeType(dataList[7], targetType);
-				}
-				catch { }
-			}
-			if (dataList.Count > 8 && !string.IsNullOrEmpty(dataList[8]))
-			{
-				try
-				{
-					var targetType = typeof(float);
-					if (targetType.IsEnum)
-						AvoidDeathRatio = (float)Enum.Parse(targetType, dataList[8]);
-					else
-						AvoidDeathRatio = (float)Convert.ChangeType(dataList[8], targetType);
 				}
 				catch { }
 			}

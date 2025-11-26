@@ -9,11 +9,13 @@ namespace ProjectRoulette
 		private Dictionary<ESymbol, SymbolData> _symbolData = new Dictionary<ESymbol, SymbolData>();
 		private Dictionary<EPattern, PatternData> _patternData = new Dictionary<EPattern, PatternData>();
 		private Dictionary<EItem, ItemData> _itemData = new Dictionary<EItem, ItemData>();
+		public List<ItemData> ListItemData { get; private set; } = new List<ItemData>();
 
 		public void InitAwake()
 		{
 			// Load Data
 			var itemData = Resources.LoadAll<ItemData>(GlobalValue.SOpath);
+			ListItemData = itemData.ToList();	// Make Item List
 			var symbolData = Resources.LoadAll<SymbolData>(GlobalValue.SOpath);
 			var patternData = Resources.LoadAll<PatternData>(GlobalValue.SOpath);
 
@@ -27,7 +29,7 @@ namespace ProjectRoulette
 			{
 				_symbolData[(ESymbol)i] = symbolData.FirstOrDefault(x => x.Key == i);
 			}
-			
+
 			for (var i = 1; i < (int)EPattern.Max; i++)
 			{
 				_patternData[(EPattern)i] = patternData.FirstOrDefault(x => x.Key == i);
@@ -61,7 +63,7 @@ namespace ProjectRoulette
 
 			return symbolData;
 		}
-		
+
 		public PatternData GetPatternData(EPattern item)
 		{
 			var patternData = _patternData.GetValueOrDefault(item);

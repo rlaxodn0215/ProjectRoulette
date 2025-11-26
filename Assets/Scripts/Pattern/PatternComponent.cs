@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace ProjectRoulette
@@ -12,12 +14,32 @@ namespace ProjectRoulette
 	public class PatternComponent // 정보 보여주는 UI Class 제작하기
 	{
 		public EPattern PatternName { get; private set; }
-		public PatternData PatternDataCache { get; private set; }
+
+		private readonly PatternData _patternDataCache;
+		private PatternData _currentPatternData;
+		public PatternData CurrentPatternData
+		{
+			get => _currentPatternData;
+			set
+			{
+				_currentPatternData = value;
+				isDataDirty = true;
+			}
+		}
+
+		public bool isDataDirty { get; private set; } = false;
+
 
 		public PatternComponent(PatternData patternData)
 		{
-			PatternDataCache = patternData;
-			PatternName = (EPattern)PatternDataCache.Key;
+			CurrentPatternData = _patternDataCache = patternData;
+			PatternName = (EPattern)CurrentPatternData.Key;
+		}
+
+		public void ResetData()
+		{
+			_currentPatternData = _patternDataCache;
+			isDataDirty = false;
 		}
 
 		public PatternResultData GetPatternResultData(List<SlotInfo> slotInfoList)
@@ -45,7 +67,7 @@ namespace ProjectRoulette
 			const int boardSize = 5;
 
 			// Parse pattern string -> int[25]
-			var pattern = ParsePattern(PatternDataCache.PatternType);
+			var pattern = ParsePattern(CurrentPatternData.PatternType);
 			if (pattern == null || pattern.Length != 25)
 			{
 				Debug.LogError("Invalid pattern string");
@@ -109,7 +131,7 @@ namespace ProjectRoulette
 			}
 
 			// 가산 비율 계산
-			resultData.Ratio = PatternDataCache.PatternRatio;
+			resultData.Ratio = CurrentPatternData.PatternRatio;
 
 			return resultData;
 

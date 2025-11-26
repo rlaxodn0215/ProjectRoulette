@@ -6,6 +6,7 @@ namespace ProjectRoulette
 	{
 		private static int _id = 0;
 		private int _itemId = 0;
+
 		public int Id
 		{
 			get
@@ -14,22 +15,44 @@ namespace ProjectRoulette
 				{
 					_itemId = ++_id;
 				}
+
 				return _itemId;
 			}
 		}
+
 		public EItem ItemName { get; private set; }
 		private readonly ItemData _itemDataCache;
+		private ItemData _currentItemData;
+
+		public ItemData CurrentItemData
+		{
+			get => _currentItemData;
+			set
+			{
+				_currentItemData = value;
+				isDataDirty = true;
+			}
+		}
+
+		public bool isDataDirty { get; private set; } = false;
 
 		public ItemComponent(ItemData itemData)
 		{
-			_itemDataCache = itemData;
-			ItemName = (EItem)_itemDataCache.Key;
+			CurrentItemData = _itemDataCache = itemData;
+			ItemName = (EItem)CurrentItemData.Key;
 		}
+
+		public void ResetData()
+		{
+			_currentItemData = _itemDataCache;
+			isDataDirty = false;
+		}
+
 
 		public void Execute()
 		{
 			// Create Symbol or Pattern
-			
+
 			// Item Use
 		}
 	}

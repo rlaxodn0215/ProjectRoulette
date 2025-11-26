@@ -11,6 +11,7 @@ namespace ProjectRoulette
 		public int Key;
 		public int LocalizationKey;
 		public float PatternRatio;
+		public float UpgradeRatioPerRound;
 		public string PatternType;
 
 	#if UNITY_EDITOR
@@ -58,11 +59,23 @@ namespace ProjectRoulette
 			{
 				try
 				{
+					var targetType = typeof(float);
+					if (targetType.IsEnum)
+						UpgradeRatioPerRound = (float)Enum.Parse(targetType, dataList[3]);
+					else
+						UpgradeRatioPerRound = (float)Convert.ChangeType(dataList[3], targetType);
+				}
+				catch { }
+			}
+			if (dataList.Count > 4 && !string.IsNullOrEmpty(dataList[4]))
+			{
+				try
+				{
 					var targetType = typeof(string);
 					if (targetType.IsEnum)
-						PatternType = (string)Enum.Parse(targetType, dataList[3]);
+						PatternType = (string)Enum.Parse(targetType, dataList[4]);
 					else
-						PatternType = (string)Convert.ChangeType(dataList[3], targetType);
+						PatternType = (string)Convert.ChangeType(dataList[4], targetType);
 				}
 				catch { }
 			}

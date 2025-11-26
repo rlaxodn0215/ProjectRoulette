@@ -9,6 +9,8 @@ namespace ProjectRoulette
 		B,
 		C,
 		D,
+		Block,
+		Mimic,
 		All,
 		Max,
 	}
@@ -53,6 +55,8 @@ namespace ProjectRoulette
 		B,
 		C,
 		D,
+		Block,
+		Mimic,
 		Single,
 		Row3,
 		Row4,
@@ -79,5 +83,23 @@ namespace ProjectRoulette
 		WShape,
 		Apple,
 		Max,
+	}
+
+	public enum EItemType
+	{
+		CreateSymbol,
+		CreatePattern,
+		Upgrade
+	}
+
+	public enum EItemSkill
+	{
+		None,
+		BlocSlot,
+		Mimic,
+		UpSymbolChance,
+		UpSymbolValue,
+		UpPatternChance,
+		UpPatternValue
 	}
 }

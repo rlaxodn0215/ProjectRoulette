@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f2c7696fcb0b5840ab22e606a1e36a8, type: 3}
   m_Name: WShape
   m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.ItemData
-  Key: 28
-  LocalizationKey: 28
-  CreateSymbol: 0
-  Symbol: 
+  Key: 30
+  LocalizationKey: 30
+  isCreateSymbol: 0
+  Symbol: 00000000
   SymbolValue: 0
-  CreatePattern: 1
+  isCreatePattern: 0
   Pattern: 18000000
   PatternValue: 0
-  AvoidDeathRatio: 0
+  ItemSkill: 0

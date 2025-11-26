@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectRoulette.ItemData
   Key: 1
   LocalizationKey: 1
-  CreateSymbol: 1
-  Symbol: 01000000
+  isCreateSymbol: 0
+  Symbol: 00000000
   SymbolValue: 0
-  CreatePattern: 0
+  isCreatePattern: 0
   Pattern: 
   PatternValue: 0
-  AvoidDeathRatio: 0
+  ItemSkill: 0
